@@ -1,0 +1,26 @@
+import java.util.Scanner;
+
+public class CYOA
+{
+    public static void main(String[] args)
+    {
+        // Start here!
+        
+        //intro
+        
+        //Choose to go to Hong Kong, Miami, Cape Town
+        
+            //They choose Hong Kong
+                //Visit Victoria Harbor
+                //Visit the Ngong Ping cable cars
+                
+            //They choose Miami
+                //Go to Biscayne Bay
+                //Popular beaches
+                
+            //They choose Cape Town
+                //Two oceans aquarium
+                //District six museumm
+        //outro
+    }
+}
