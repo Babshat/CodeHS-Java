@@ -1,0 +1,22 @@
+import java.util.Scanner;
+
+public class CYOA {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+     
+        System.out.println("Do you want to travel to China, Florida, or Nigeria?");
+        String choice = scanner.nextLine();
+
+        if (choice.toUpperCase().substring(0, 1).equals("C")) {
+            System.out.println("You have chosen to go to China. You can visit Victoria Harbor or the Ngong Ping cable cars.");
+        } else if (choice.toUpperCase().substring(0, 1).equals("F")) {
+            System.out.println("You have chosen to go to Miami. You can visit Biscayne Bay or multiple popular beaches.");
+        } else if (choice.toUpperCase().substring(0, 1).equals("N")) {
+            System.out.println("You have chosen to go to Nigeria. You can visit the Yankari National Park or the Lekki Conservation Centre.");
+        } else {
+            System.out.println("Invalid choice. Please select China, Florida, or Nigeria.");
+        }
+
+    }
+}
