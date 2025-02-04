@@ -1,0 +1,47 @@
+public class Fibonacci 
+{
+    public static void main(String[] args) 
+    {
+        // Number of elements in the sequence
+        int max = 15;
+        
+        // Create an array to store the Fibonacci sequence
+        int[] sequence = new int[max];
+        
+        // Initialize the first two elements
+        sequence[0] = 0;
+        sequence[1] = 1;
+        
+        // Generate the Fibonacci sequence
+        for (int i = 2; i < max; i++) 
+        {
+            sequence[i] = sequence[i - 1] + sequence[i - 2];
+        }
+        
+        // Print the sequence
+        System.out.println("The first 15 elements in the Fibonacci sequence are: ");
+        for (int num : sequence) 
+        {
+            System.out.print(num + " ");
+        }
+        System.out.println(); // Move to the next line
+        
+        // Test findNextElement method
+        System.out.println("The element after 21 is " + findNextElement(sequence, 21));
+        System.out.println("The element after 233 is " + findNextElement(sequence, 233));
+        System.out.println("The element after 377 is " + findNextElement(sequence, 377));
+    }
+      
+    // Method to find the next element in the sequence
+    public static int findNextElement(int[] arr, int toFind) 
+    {
+        for (int i = 0; i < arr.length - 1; i++) 
+        {
+            if (arr[i] == toFind) 
+            {
+                return arr[i + 1]; // Return the next element
+            }
+        }
+        return -1; // Return -1 if the element isn't found or has no next value
+    }
+}
