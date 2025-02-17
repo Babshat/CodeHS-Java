@@ -1,0 +1,85 @@
+public class ClassListTester
+{
+    public static void main(String[] args)
+    {
+        //You don't need to change anything here, but feel free to add more Students!
+        Roster.addStudent("Alan", 11);
+        Roster.addStudent("Alex", 10);
+        Roster.addStudent("Anita", 12);
+        System.out.println(Roster.printClassList());
+        
+        System.out.println("Last Student: " + Roster.getLastStudent());
+        System.out.println("First Student: " + Roster.getStudent(0));
+    
+        System.out.println();
+        Roster.addStudent(2, "Trevor", 12);
+        System.out.println(Roster.printClassList());
+        System.out.println("Class Size: " + Roster.getClassSize());
+    }
+}
+import java.util.ArrayList;
+
+public class Roster {
+    // Implement the student ArrayList 
+    private static ArrayList<Student> classList = new ArrayList<>();
+    
+    public static void addStudent(String name, int grade) {
+        // Create Student and add to classList
+        Student newStudent = new Student(name, grade);
+        classList.add(newStudent);
+    }
+    
+    // Returns the name of the last student in the classList
+    public static String getLastStudent() {
+        return classList.get(classList.size() - 1).getName();
+    }
+    
+    // Returns the size of the classList
+    public static int getClassSize() {
+        return classList.size();
+    }
+    
+    // Adds a new student to the classList at a specific index
+    public static void addStudent(int index, String name, int grade) {
+        if (index < 0 || index > classList.size()) {
+            return;
+        }
+        classList.add(index, new Student(name, grade));
+    }
+    
+    // Returns the name of a student at the specified index
+    public static String getStudent(int index) {
+        if (index < 0 || index >= classList.size()) {
+        }
+        return classList.get(index).getName();
+    }
+    
+    // Prints the class list
+    public static String printClassList() {
+        StringBuilder names = new StringBuilder("Student Class List:\n");
+        for (Student student : classList) {
+            names.append(student.getName()).append("\n");
+        }
+        return names.toString();
+    }
+}
+public class Student
+{
+    /*
+     * This class is complete. You do not need
+     * to add anything.
+     */
+    private String name;
+    private int grade;
+    
+    public Student(String name, int grade)
+    {
+        this.name = name;
+        this.grade = grade;
+    }
+    
+    public String getName()
+    {
+        return this.name;
+    }
+}
