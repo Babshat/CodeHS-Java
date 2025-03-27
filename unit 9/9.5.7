@@ -1,0 +1,66 @@
+public class Person {
+
+    private String name;
+    private String birthday;
+
+    public Person (String name, String birthday)
+    {
+        this.name = name;
+        this.birthday = birthday;
+    }
+
+    public String getBirthday(){
+        return birthday;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    //Create a equals method here
+    public boolean equals(Person other) {
+        if (this.getName().equals(other.getName()) && this.getBirthday().equals(other.getBirthday())) {
+            return true;
+        }
+        return false;
+    }
+    
+}
+
+import java.util.Scanner;
+
+public class PersonTester
+{
+    public static void main(String[] args)
+    {
+        // Start here!
+        Scanner scan = new Scanner(System.in);
+        System.out.print("Please enter the Person's name:  ");
+        String name = scan.next();
+        System.out.print("Please enter the Person's birthday:");
+        String birthday = scan.next();
+        Person one = new Person(name, birthday);
+        System.out.print("Please enter the Person's name:  ");
+        name = scan.next();
+        System.out.print("Please enter the Person's birthday:");
+        birthday = scan.next();
+        System.out.print("Please enter the Student's grade: ");
+        int grade = scan.nextInt();
+        Person two = new Student(name, birthday, grade);
+        System.out.println(one.equals(two));
+    }
+}
+
+public class Student extends Person {
+
+    private int grade;
+
+    public Student(String name, String birthday, int grade){
+        super(name, birthday);
+        this.grade = grade;
+    }
+
+    public int getGrade(){
+        return grade;
+    }
+}
