@@ -1,0 +1,75 @@
+public class Account {
+    private int accountNumber;
+    private double balance;
+
+    // Constructor
+    public Account(int accountNumber, double openingBal) {
+        this.accountNumber = accountNumber;
+        this.balance = openingBal;
+    }
+
+    // Accessor method for balance
+    public double getBalance() {
+        return balance;
+    }
+
+    // Add amount to balance
+    public void deposit(double amount) {
+        balance += amount;
+    }
+
+    // Subtract amount from balance
+    public void withdraw(double amount) {
+        balance -= amount;
+    }
+
+    // toString method
+    public String toString() {
+        return "Regular account current balance $" + String.format("%.1f", balance);
+    }
+}
+
+public class BankTester {
+    public static void main(String[] args) {
+        // Create regular account and student account
+        Account regularAccount = new Account(1001, 50.00);
+        StudentAccount studentAccount = new StudentAccount(2001, 50.00);
+
+        // Test deposits
+        regularAccount.deposit(20.00);
+        studentAccount.deposit(20.00);
+
+        // Test withdrawals
+        regularAccount.withdraw(10.00);
+        studentAccount.withdraw(10.00);
+
+        // Print account details
+        System.out.println(regularAccount);
+        System.out.println(studentAccount);
+    }
+}
+
+public class StudentAccount extends Account {
+    // Constructor
+    public StudentAccount(int accountNumber, double openingBal) {
+        super(accountNumber, openingBal);
+    }
+
+    // Override deposit method with 10% bonus
+    @Override
+    public void deposit(double amount) {
+        super.deposit(amount * 1.1);
+    }
+
+    // Override withdraw method with $1.50 fee
+    @Override
+    public void withdraw(double amount) {
+        super.withdraw(amount + 1.50);
+    }
+
+    // Override toString method
+    @Override
+    public String toString() {
+        return "Student account current balance $" + String.format("%.1f", getBalance());
+    }
+}
