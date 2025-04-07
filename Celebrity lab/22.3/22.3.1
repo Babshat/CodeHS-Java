@@ -1,0 +1,17 @@
+import java.util.ArrayList;
+
+public class CelebrityGame {
+    // Instance variables
+    private ArrayList<Celebrity> celebGameList; 
+    private Celebrity gameCelebrity; 
+    private CelebrityFrame gameWindow; 
+
+    /**
+     * Constructor for the CelebrityGame class.
+     * Initializes the game window and the list of celebrities.
+     */
+    public CelebrityGame() {
+        celebGameList = new ArrayList<>(); 
+        gameWindow = new CelebrityFrame(this);
+    }
+}
