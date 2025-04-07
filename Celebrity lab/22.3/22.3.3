@@ -1,0 +1,960 @@
+public class Celebrity
+{
+	/**
+	 * The clue to determine the celebrity
+	 */
+	private String clue;
+	/**
+	 * The answer or name of the celebrity.
+	 */
+	private String name;
+	/**
+	 * Creates a Celebrity instance with the supplied answer and clue
+	 * @param answer
+	 * @param clue
+	 */
+	public Celebrity(String answer, String clue)
+	{
+		this.name = answer;
+		this.clue = clue;
+	}
+
+	/**
+	 * Supplies the clue for the celebrity
+	 * @return
+	 */
+	public String getClue()
+	{
+		return clue;
+	}
+
+	/**
+	 * Supplies the answer for the celebrity.
+	 * @return
+	 */
+	public String getAnswer()
+	{
+		return name;
+	}
+
+	/**
+	 * Updates the clue to the provided String.
+	 * @param clue The new clue.
+	 */
+	public void setClue(String clue)
+	{
+		this.clue = clue;
+	}
+
+	/**
+	 * Updates the answer to the provided String.
+	 * @param answer The new answer.
+	 */
+	public void setAnswer(String answer)
+	{
+		name = answer;
+	}
+	
+	/**
+	 * Provides a String representation of the Celebrity.
+	 */
+	@Override
+	public String toString()
+	{
+		return "The celebrity's name is " + name + " and the clue is " + clue;
+	}
+	
+}
+
+import java.awt.CardLayout;
+import java.awt.event.WindowEvent;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+
+public class CelebrityFrame extends JFrame
+{
+	//Data members for the JFrame subclass instance 
+	
+	/**
+	 * The instance of the panel used for playing the game.
+	 */
+	private CelebrityPanel gamePanel;
+	
+	/**
+	 * Blank panel used for the CardLayout switching screens feature.
+	 */
+	private JPanel panelCards;
+	
+	/**
+	 * The instance variable used to add a celebrity to the game.
+	 */
+	private StartPanel startPanel;
+	
+	/**
+	 * A reference to the CelebrityGame instance to allow for minimized coupling in the object structure.
+	 */
+	private CelebrityGame controller;
+	
+	private static final String GAME_PANEL = "GAME";
+	
+	private static final String START_PANEL = "START";
+	
+	private CardLayout cardLayout;
+	
+	
+	/**
+	 * Builds an instance of the CelebFrame with a reference to the CelebrityGame instance.
+	 * @param controller A reference to a CelebrityGame to share with the CelebPanel instance.
+	 */
+	public CelebrityFrame(CelebrityGame controllerRef)
+	{
+		//The first line of any subclass should ALWAYS be a correct call to the super constructor.
+		super();
+		controller = controllerRef;
+		startPanel = new StartPanel(controller);
+		gamePanel = new CelebrityPanel(controller);
+		
+		//CardLayout functionality - works in switching the screens but doesnt add the first clue
+//		panelCards = new JPanel(new CardLayout());
+//		cardLayout = new CardLayout();
+//		panelCards = (JPanel) this.getContentPane();
+//	    panelCards.setLayout(cardLayout);
+//		panelCards.add(startPanel, START_PANEL);
+//		panelCards.add(gamePanel, GAME_PANEL);
+		
+		setupFrame();	
+		
+	
+	}
+	/**
+	 * Configures the JFrame window subclass to add the panel and set size based information.
+	 */
+	private void setupFrame()
+	{
+		startPanel = new StartPanel(controller);
+		gamePanel = new CelebrityPanel(controller);
+		setSize(500,500);
+		setLocation(150,50);
+		setVisible(true);
+	}
+	
+	/**
+	 * Swaps the screen between the existing panels based on the String parameter.
+	 * @param screen The name of the screen to open.
+	 */
+	public void replaceScreen(String screen)
+	{
+		
+		//cardLayout.show(panelCards, screen);
+		
+		if(screen.equals("GAME")) {
+			remove(startPanel);
+			add(gamePanel);
+			gamePanel.addClue(controller.sendClue());
+		}
+		else if(screen.equals("START")){
+			super.remove(gamePanel);
+			add(startPanel);
+		}
+		
+	}
+	
+}
+
+import java.util.ArrayList;
+
+public class CelebrityGame
+{
+	/**
+	 * A reference to a Celebrity or subclass instance.
+	 */
+	private Celebrity gameCelebrity;
+	/**
+	 * The GUI frame for the Celebrity game.
+	 */
+	private CelebrityFrame gameWindow;
+	/**
+	 * The ArrayList of Celebrity values that make up the game
+	 */
+	private ArrayList<Celebrity> celebGameList;
+	/**
+	 * Builds the game and starts the GUI
+	 */
+	public CelebrityGame()
+	{
+		celebGameList = new ArrayList<Celebrity>();
+		gameWindow = new CelebrityFrame(this);
+	}
+
+	/**
+	 * Prepares the game to start by re-initializing the celebGameList and having the gameFrame open the start screen.
+	 */
+	public void prepareGame()
+	{
+		celebGameList = new ArrayList<Celebrity>();
+		gameWindow.replaceScreen("START");
+	}
+	
+	//Closes the current game window. Used for the reset button functionality under CelebrityPanel
+	public void closeGame()
+	{
+		gameWindow.dispose();
+	}
+
+	/**
+	 * Determines if the supplied guess is correct.
+	 * 
+	 * @param guess
+	 *            The supplied String
+	 * @return Whether it matches regardless of case or extraneous external
+	 *         spaces.
+	 */
+	public boolean processGuess(String guess)
+	{
+		if(guess.trim().equalsIgnoreCase(gameCelebrity.getAnswer())) {
+			
+			celebGameList.remove(gameCelebrity);
+			
+			if(celebGameList.size() > 0)
+				gameCelebrity = celebGameList.get(0);
+			else
+				gameCelebrity = new Celebrity("","");
+			
+			return true;
+		}
+		else
+			return false;
+	}
+
+	/**
+	 * Asserts that the list is initialized and contains at least one Celebrity.
+	 * Sets the current celebrity as the first item in the list. Opens the game
+	 * play screen.
+	 */
+	public void play()
+	{
+		if(celebGameList != null && celebGameList.size() > 0) {
+			
+			gameCelebrity = celebGameList.get(0);
+			gameWindow.replaceScreen("GAME");
+			
+			
+		}
+		else {
+			
+			gameWindow = new CelebrityFrame(this);
+			gameWindow.replaceScreen("START");
+
+		}
+	}
+
+	/**
+	 * Adds a Celebrity of specified type to the game list
+	 * 
+	 * @param name
+	 *            The name of the celebrity
+	 * @param guess
+	 *            The clue(s) for the celebrity
+	 * @param type
+	 *            What type of celebrity
+	 */
+	public void addCelebrity(String name, String guess, String type)
+	{
+		if(validateCelebrity(name) && validateClue(guess, "")) {
+			
+			if(type.equals("Celebrity"))
+				celebGameList.add(new Celebrity(name, guess));
+			else if(guess.indexOf(',') != -1 && type.equals("Literature"))
+				celebGameList.add(new LiteratureCelebrity(name, guess.substring(0, guess.indexOf(',')), guess.substring(guess.indexOf(','))));
+			else
+				celebGameList.add(new LiteratureCelebrity(name, guess, ""));
+		}
+			
+	}
+	
+
+	/**
+	 * Validates the name of the celebrity. It must have at least 4 characters.
+	 * @param name The name of the Celebrity
+	 * @return If the supplied Celebrity is valid
+	 */
+	public boolean validateCelebrity(String name)
+	{
+		if(name.length() >= 4)
+			return true;
+		else
+			return false;
+	}
+
+	/**
+	 * Checks that the supplied clue has at least 10 characters or is a series of clues
+	 * This method would be expanded based on your subclass of Celebrity.
+	 * @param clue The text of the clue(s)
+	 * @param type Supports a subclass of Celebrity 
+	 * @return If the clue is valid.
+	 */
+	public boolean validateClue(String clue, String type)
+	{
+		if(clue.length() >= 10)
+			return true;
+		else
+			return false;
+	}
+
+	/**
+	 * Accessor method for the current size of the list of celebrities
+	 * 
+	 * @return Remaining number of celebrities
+	 */
+	public int getCelebrityGameSize()
+	{
+		return celebGameList.size();
+	}
+
+	/**
+	 * Accessor method for the games clue to maintain low coupling between
+	 * classes
+	 * 
+	 * @return The String clue from the current celebrity.
+	 */
+	public String sendClue()
+	{
+		return gameCelebrity.getClue();
+	}
+
+	/**
+	 * Accessor method for the games answer to maintain low coupling between
+	 * classes
+	 * 
+	 * @return The String answer from the current celebrity.
+	 */
+	public String sendAnswer()
+	{
+		return gameCelebrity.getAnswer();
+	}
+	
+}
+
+import javax.swing.*;
+import java.awt.event.ActionListener;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+
+
+public class CelebrityPanel extends JPanel
+{
+  
+  /**
+   * The button pressed when making a guess.
+   */
+  private JButton guessButton;
+  
+  /**
+   * The button pressed to restart the game
+   */
+  private JButton resetButton;
+  
+  /**
+   * The label used to identify what to type in the field
+   */
+  private JLabel guessLabel;
+  
+  /**
+   * The label to hold the static text for the timer
+   */
+  private JLabel staticTimerLabel;
+  
+  /**
+   * The label to hold the dynamic text of the timer.
+   */
+  private JLabel dynamicTimerLabel;
+  
+  /**
+   * Timer for display
+   */
+  private Timer countdownTimer;
+  
+  /**
+   * Listener for the countdownTimer
+   */
+  private ActionListener timerListener;
+  
+  /**
+   * Holds the user and program input text area and allows the text to scroll.
+   */
+  private JScrollPane cluePane;
+  
+  /**
+   * The text area for user and program information
+   */
+  private JTextArea clueArea;
+  
+  /**
+   * The user interaction field.
+   */
+  private JTextField guessField;
+  
+  /**
+   * Layout manager for the panel. Uses constraints between components to
+   * align or spring from edges.
+   */
+  private SpringLayout panelLayout;
+  
+  /**
+   * The String used when a user correctly guesses the Celebrity
+   */
+  private String success;
+  
+  /**
+   * The String used when a user has not guessed correctly.
+   */
+  private String tryAgain;
+  
+  /**
+   * The current value of the time in seconds.
+   */
+  private int seconds;
+  
+  /**
+   * Reference to the game instance.
+   */
+  private CelebrityGame controller;
+  
+  /**
+   * Builds the CelebrityPanel and initializes all data members.
+   * 
+   * @param controller
+   *            Reference to the Game passed when the CelebrityPanel is
+   *            instantiated in the Frame.
+   */
+  public CelebrityPanel(CelebrityGame controller)
+  {
+    super();
+    this.controller = controller;
+    this.panelLayout = new SpringLayout();
+    this.guessLabel = new JLabel("Guess:");
+    this.staticTimerLabel = new JLabel("Time remaining: ");
+    this.dynamicTimerLabel = new JLabel("60");
+    this.guessButton = new JButton("Submit guess");
+    this.resetButton = new JButton("Start again");
+    this.clueArea = new JTextArea("", 30, 20);
+    this.cluePane = new JScrollPane(clueArea);
+    this.guessField = new JTextField("Enter guess here", 30);
+    this.success = "You guessed correctly!!! \nNext Celebrity clue is: ";
+    this.tryAgain = "You have chosen poorly, try again!\nThe clue is: ";
+    this.seconds = 60;
+    this.countdownTimer = new Timer(1000, timerListener);
+    
+    setupPanel();
+    setupLayout();
+    setupListeners();
+    
+    
+  }
+  
+  /**
+   * Helper method to add all components to the panel and adjust GUI settings
+   * including scroll bars, and line wrap.
+   */
+  private void setupPanel()
+  {
+    this.setLayout(panelLayout);
+    this.add(guessLabel);
+    this.add(cluePane);
+    this.add(guessField);
+    this.add(guessButton);
+    this.add(resetButton);
+    this.add(dynamicTimerLabel);
+    this.add(staticTimerLabel);
+    
+    //Changes the font to be larger than default
+    staticTimerLabel.setFont(new Font("Helvetica", Font.BOLD,20));
+    dynamicTimerLabel.setFont(new Font("Helvetica", Font.BOLD,20));
+    
+    // These lines allow vertical scrolling but not horizontal.
+    cluePane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    cluePane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    
+    // These lines allow word and line wrapping for the clue area.
+    clueArea.setWrapStyleWord(true);
+    clueArea.setLineWrap(true);
+    
+    // The clue area is set to not be editable by the user :D
+    clueArea.setEditable(false);
+    
+  }
+  
+  /**
+   * Using a helper method to hold all the constraints for the GUI components
+   * in the panel
+   */
+  private void setupLayout()
+  {
+    panelLayout.putConstraint(SpringLayout.NORTH, cluePane, 15, SpringLayout.NORTH, this);
+    panelLayout.putConstraint(SpringLayout.WEST, cluePane, 15, SpringLayout.WEST, this);
+    panelLayout.putConstraint(SpringLayout.SOUTH, cluePane, -100, SpringLayout.SOUTH, this);
+    panelLayout.putConstraint(SpringLayout.EAST, cluePane, -15, SpringLayout.EAST, this);
+    panelLayout.putConstraint(SpringLayout.NORTH, guessButton, 10, SpringLayout.SOUTH, guessLabel);
+    panelLayout.putConstraint(SpringLayout.SOUTH, guessButton, -15, SpringLayout.SOUTH, this);
+    panelLayout.putConstraint(SpringLayout.NORTH, resetButton, 0, SpringLayout.NORTH, guessButton);
+    panelLayout.putConstraint(SpringLayout.EAST, guessButton, 0, SpringLayout.EAST, cluePane);
+    panelLayout.putConstraint(SpringLayout.WEST, resetButton, 0, SpringLayout.WEST, cluePane);
+    panelLayout.putConstraint(SpringLayout.NORTH, guessLabel, 10, SpringLayout.SOUTH, cluePane);
+    panelLayout.putConstraint(SpringLayout.WEST, guessLabel, 0, SpringLayout.WEST, cluePane);
+    panelLayout.putConstraint(SpringLayout.SOUTH, resetButton, 0, SpringLayout.SOUTH, guessButton);
+    panelLayout.putConstraint(SpringLayout.NORTH, guessField, 0, SpringLayout.NORTH, guessLabel);
+    panelLayout.putConstraint(SpringLayout.WEST, guessField, 5, SpringLayout.EAST, guessLabel);
+    panelLayout.putConstraint(SpringLayout.EAST, guessField, 0, SpringLayout.EAST, cluePane);
+    panelLayout.putConstraint(SpringLayout.NORTH, staticTimerLabel, 15, SpringLayout.NORTH, resetButton);
+    panelLayout.putConstraint(SpringLayout.WEST, staticTimerLabel, 10, SpringLayout.EAST, resetButton);
+    panelLayout.putConstraint(SpringLayout.NORTH, dynamicTimerLabel, 0, SpringLayout.NORTH, staticTimerLabel);
+    panelLayout.putConstraint(SpringLayout.WEST, dynamicTimerLabel, 5, SpringLayout.EAST, staticTimerLabel);
+    
+  }
+  
+  /*
+   * Attaches listeners to the GUI components of the program
+   */
+  private void setupListeners()
+  {
+    
+    /**
+     * Attaches a listener to the resetButton and uses it to call the reset
+     * method in the game.
+     */
+    resetButton.addActionListener(new ActionListener()
+                                    {
+      public void actionPerformed(ActionEvent mouseClick)
+      {
+    	if(controller.getCelebrityGameSize() == 0)
+    		controller.closeGame();
+        controller.play();
+      }
+    });
+    
+    /**
+     * Attaches a listener to the guessButton and uses it to call the
+     * updateScreen method in the panel.
+     */
+    guessButton.addActionListener(new ActionListener()
+                                    {
+      public void actionPerformed(ActionEvent mouseClick)
+      {
+        updateScreen();
+      }
+    });
+    
+    /**
+     * Attaches a listener to the guessField for enter key press and uses it
+     * to call the updateScreen method in the panel.
+     */
+    guessField.addActionListener(new ActionListener()
+                                   {
+      public void actionPerformed(ActionEvent enterPress)
+      {
+        updateScreen();
+      }
+    });
+    
+    countdownTimer.addActionListener(new ActionListener()
+                                       {
+      public void actionPerformed(ActionEvent timerFire)
+      {
+        timerFires();
+      }
+    });
+    
+    countdownTimer.start();
+  }
+  
+  /**
+   * Helper method for when the ActionListener attached to the timer fires.
+   * Sets the text of the label to match the remaining time and a message at
+   * the end.
+   */
+  private void timerFires()
+  {
+    seconds--;
+    
+    if (seconds <= 10)
+    {
+      dynamicTimerLabel.setFont(new Font("Helvetica", Font.BOLD,20));
+      dynamicTimerLabel.setForeground(Color.RED);
+    }
+    
+    if (seconds < 0)
+    {
+      staticTimerLabel.setText("Times up!");
+      dynamicTimerLabel.setText("00");
+      seconds = 60;
+      countdownTimer.stop();
+      guessButton.setEnabled(false);
+      guessField.setEnabled(false);
+    }
+    else
+    {
+      dynamicTimerLabel.setText("" + seconds);
+    }
+    
+  }
+  
+  /**
+   * Method to add a clue to the screen from the game instance
+   * 
+   * @param clue
+   *            The clue to add to the screen.
+   */
+  public void addClue(String clue)
+  {
+    clueArea.setText("The clue is: " + clue);
+    seconds = 60;
+    dynamicTimerLabel.setForeground(Color.BLACK);
+    countdownTimer.restart();
+    staticTimerLabel.setText("Time remaining: ");
+    guessButton.setEnabled(true);
+    guessField.setEnabled(true);
+  }
+  
+  /**
+   * Refactored method to allow both button and enter press in the guessField
+   * to provide the same functionality.
+   */
+  private void updateScreen()
+  {
+    String currentGuess = guessField.getText();
+    clueArea.append("\nYou guessed: " + currentGuess + "\n");
+    
+    if (controller.processGuess(currentGuess))
+    {
+      clueArea.append(success + controller.sendClue());
+      clueArea.setBackground(Color.CYAN);
+    }
+    else
+    {
+      clueArea.setBackground(Color.WHITE);
+      clueArea.append(tryAgain);
+      clueArea.append(controller.sendClue());
+    }
+    
+    if (controller.getCelebrityGameSize() == 0)
+    {
+      clueArea.append("\nNo more celebrities to guess.");
+      guessButton.setEnabled(false);
+      guessField.setEnabled(false);
+    }
+    // Used to move the text area to the current cursor
+    clueArea.setCaretPosition(clueArea.getDocument().getLength());
+    
+  }
+  
+}
+
+public class CelebrityRunner
+{
+	/**
+	 * The entry point of the Java application.
+	 * @param args Unused parameter as it is a GUI based program.
+	 */
+	public static void main(String [] args)
+	{
+		CelebrityGame game = new CelebrityGame();
+		game.prepareGame();
+	}
+}
+
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
+
+
+public class StartPanel extends JPanel
+{
+  /**
+   * Reference to the Game to call methods.
+   */
+  private CelebrityGame controller;
+  
+  /**
+   * The layout manager for the screen.
+   */
+  private SpringLayout panelLayout;
+  
+  /**
+   * Logical container for the RadioButtons to guarantee only one is selected
+   * at a time.
+   */
+  private ButtonGroup typeGroup;
+  
+  /**
+   * RadioButton for the default type.
+   */
+  private JRadioButton celebrityRadio;
+  
+  /**
+   * RadioButton for the Celebrity type.
+   */
+  private JRadioButton literatureRadio;
+  
+  /**
+   * Customize the JRadioButton for the class created sub class
+   */
+  
+  /**
+   * Label to guide the user to what should be inputted.
+   */
+  private JLabel clueLabel;
+  
+  /**
+   * Label for displaying the current number of celebrities added to the game
+   */
+  private JLabel celebrityCountLabel;
+  
+  /**
+   * Textfield to type in the answer for the celebrity.
+   */
+  private JTextField answerField;
+  
+  /**
+   * Textfield to type in the clue for the celebrity.
+   */
+  private JTextField clueField;
+  
+  /**
+   * Button used to verify and add a Celebrity to the ArrayList of Celebrity for the game
+   */
+  private JButton addCelebrityButton;
+  
+  /**
+   * Button used to start the game.
+   */
+  private JButton startButton;
+  
+  /**
+   * String to populate the clueLabel if Celebrity is picked.
+   */
+  private String celebrityClue;
+  
+  /**
+   * String to populate the clueLabel if Literature Celebrity is picked.
+   */
+  private String literatureClue;
+  
+  /**
+   * String to populate the clueLabel if Class Generated Celebrity is picked.
+   */
+  
+  
+  /**
+   * String used for static text in label.
+   */
+  private String countLabelText;
+  
+  /**
+   * The current number of celebrities added to the game
+   */
+  private int celebrityCount;
+  
+  
+  /**
+   * Constructs a StartPanel with a reference to the game passed as a
+   * parameter to be used as a data member.
+   * 
+   * @param controller
+   *            The reference to the game
+   */
+  public StartPanel(CelebrityGame controller)
+  {
+    super();
+    this.controller = controller;
+    this.panelLayout = new SpringLayout();
+    this.typeGroup = new ButtonGroup();
+    this.celebrityRadio = new JRadioButton("Celebrity");
+    this.literatureRadio = new JRadioButton("Literature Celebrity");
+    this.celebrityClue = "Enter the clue for the celebrity";
+    this.literatureClue = "Enter the clues for the literature celeb separated by commas";
+    this.clueLabel = new JLabel(celebrityClue);
+    
+    this.answerField = new JTextField("Type celebrity here (4 letters minimum thx Cher)");
+    this.clueField = new JTextField("Enter celebrity clue here (10 letters minimum)");
+    this.addCelebrityButton = new JButton("Add current celebrity");
+    this.startButton = new JButton("Start Celebrity game");
+    this.celebrityCount = 0;
+    this.countLabelText = "Current Celebrity Count: " + celebrityCount;
+    this.celebrityCountLabel = new JLabel(countLabelText);
+    
+    setupPanel();
+    setupLayout();
+    setupListeners();
+  }
+  
+  /**
+   * Validation method for the text to create a Celebrity instance.
+   * 
+   * @param answerText
+   *            The name of the Celebrity. Validation requires at least 4
+   *            characters.
+   * @param clueText
+   *            The text for the clue. Validation depends on the selected
+   *            Celebrity type, but at least 10 characters are required.
+   * @return Whether the appropriate text amounts are filled and the correct
+   *         type of clue is given.
+   */
+  private boolean validate(String answerText, String clueText)
+  {
+    boolean validClue = false;
+    boolean validAnswer = false;
+    
+    if (literatureRadio.isSelected())
+    {
+      validClue = controller.validateClue(clueText, "Literature");
+    }
+    else
+    {
+      validClue = controller.validateClue(clueText, "");
+    }
+    
+    if (answerText.length() > 4)
+    {
+      validAnswer = controller.validateCelebrity(answerText);
+    }
+    
+    return (validClue && validAnswer);
+  }
+  
+  /**
+   * Adds all components to the StartPanel and uses the SpringLayout variable,
+   * panelLayout, as the layout manager.
+   */
+  private void setupPanel()
+  {
+    // Adds the RadioButtons to the group so only one can be selected.
+	  this.setLayout(panelLayout);
+	  typeGroup.add(celebrityRadio);
+	  typeGroup.add(literatureRadio);
+	  this.add(celebrityRadio);
+	  this.add(literatureRadio);
+	  this.add(clueLabel);
+	  this.add(celebrityCountLabel);
+	  this.add(answerField);
+	  this.add(clueField);
+	  this.add(addCelebrityButton);
+	  this.add(startButton);
+  }
+  
+  /**
+   * Uses the Springlayout constraint system to place all GUI components on
+   * screen. All constraints grouped together to keep code clean and
+   * maintainable.
+   */
+  private void setupLayout()
+  {
+    panelLayout.putConstraint(SpringLayout.WEST, clueLabel, 0, SpringLayout.WEST, celebrityRadio);
+    panelLayout.putConstraint(SpringLayout.NORTH, celebrityRadio, 15, SpringLayout.NORTH, this);
+    panelLayout.putConstraint(SpringLayout.WEST, celebrityRadio, 15, SpringLayout.WEST, this);
+    panelLayout.putConstraint(SpringLayout.EAST, addCelebrityButton, 0, SpringLayout.EAST, startButton);
+    panelLayout.putConstraint(SpringLayout.NORTH, addCelebrityButton, 20, SpringLayout.SOUTH, clueField);
+    panelLayout.putConstraint(SpringLayout.WEST, addCelebrityButton, 0, SpringLayout.WEST, celebrityRadio);
+    
+    panelLayout.putConstraint(SpringLayout.NORTH, startButton, 20, SpringLayout.SOUTH, addCelebrityButton);
+    panelLayout.putConstraint(SpringLayout.NORTH, celebrityCountLabel, 0, SpringLayout.NORTH, celebrityRadio);
+    panelLayout.putConstraint(SpringLayout.EAST, celebrityCountLabel, -45, SpringLayout.EAST, this);
+    
+    //Put your custom radio button info here
+    
+    panelLayout.putConstraint(SpringLayout.NORTH, literatureRadio, 10, SpringLayout.SOUTH, celebrityRadio);
+    panelLayout.putConstraint(SpringLayout.WEST, literatureRadio, 0, SpringLayout.WEST, celebrityRadio);
+    
+    panelLayout.putConstraint(SpringLayout.NORTH, clueLabel, 10, SpringLayout.SOUTH, answerField);
+    panelLayout.putConstraint(SpringLayout.NORTH, answerField, 40, SpringLayout.SOUTH, literatureRadio);
+    panelLayout.putConstraint(SpringLayout.WEST, answerField, 0, SpringLayout.WEST, celebrityRadio);
+    panelLayout.putConstraint(SpringLayout.EAST, answerField, -15, SpringLayout.EAST, this);
+    
+    panelLayout.putConstraint(SpringLayout.WEST, clueField, 0, SpringLayout.WEST, celebrityRadio);
+    panelLayout.putConstraint(SpringLayout.SOUTH, clueField, 55, SpringLayout.SOUTH, answerField);
+    panelLayout.putConstraint(SpringLayout.EAST, clueField, 0, SpringLayout.EAST, answerField);
+    panelLayout.putConstraint(SpringLayout.WEST, startButton, 0, SpringLayout.WEST, celebrityRadio);
+    panelLayout.putConstraint(SpringLayout.EAST, startButton, 0, SpringLayout.EAST, answerField);
+    
+  }
+  
+  /**
+   * Used to link all Listeners to the associated GUI components.
+   */
+  private void setupListeners()
+  {
+    /**
+     * Links the submitButton to the validation and submit code. Provides
+     * user input if information is not valid.
+     */
+    startButton.addActionListener(new ActionListener()
+                                    {
+      public void actionPerformed(ActionEvent mouseClick)
+      {
+        controller.play();
+      }
+    });
+    
+    addCelebrityButton.addActionListener(new ActionListener()
+                                           {
+      public void actionPerformed(ActionEvent mouseClick)
+      {
+        answerField.setBackground(Color.WHITE);
+        clueField.setBackground(Color.WHITE);
+        if (validate(answerField.getText(), clueField.getText()))
+        {
+          addToGame();
+        }
+        else
+        {
+          invalidInput();
+        }
+        celebrityCount = controller.getCelebrityGameSize();
+        celebrityCountLabel.setText(countLabelText + celebrityCount);
+      }
+    });
+    
+    /**
+     * Adds listeners to the radio buttons using the Java 8+ Lambda structure
+     * for short code.
+     * 
+     */
+    literatureRadio.addActionListener(select -> clueLabel.setText(literatureClue));
+    celebrityRadio.addActionListener(select -> clueLabel.setText(celebrityClue));
+    
+  }
+  
+  private void invalidInput()
+  {
+    answerField.setText("Type in the celebrity!!");
+    answerField.setBackground(Color.RED);
+    clueField.setText("Type in the clue");
+    clueField.setBackground(Color.RED);
+  }
+  
+  private void addToGame()
+  {
+    String type = "Celebrity";
+    if (literatureRadio.isSelected())
+    {
+      type = "Literature";
+    }
+    String answer = answerField.getText().trim();
+    String clue = clueField.getText().trim();
+    answerField.setText("");
+    clueField.setText("");
+    controller.addCelebrity(answer, clue, type);
+    startButton.setEnabled(true);
+  }
+  
+}
