@@ -1,0 +1,36 @@
+public class Celebrity
+{
+    private String answer;
+    private String clue;
+    
+    public Celebrity(String a, String c)
+    {
+        answer = a;
+        clue = c;
+    }
+    
+    public String getAnswer()
+    {
+        return answer;
+    }
+    
+    public String getClue()
+    {
+        return clue;
+    }
+    
+    public void setAnswer(String a)
+    {
+        answer = a;
+    }
+    
+    public void setClue(String c)
+    {
+        clue = c;
+    }
+    
+    public String toString()
+    {
+        return "The Celebrity's name is: " + answer + ". The clue for this celebrity is: " + clue;
+    }
+}
