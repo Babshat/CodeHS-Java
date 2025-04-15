@@ -1,0 +1,88 @@
+public class ArtCelebrity extends Celebrity
+{
+    private boolean wonVeniceBiennaleGoldenLion;
+    private boolean artist;
+    private String legacy;
+    
+    private String[] clueList = new String[3];
+    
+   
+    public ArtCelebrity(String name, String clue)
+    {
+        super(name, clue);
+    }
+    
+    
+    public String processClues()
+    {
+        String[] clues = super.getClue().split(",");
+        if (clues.length != 3)
+        {
+            return "";
+        }
+        
+		for (int i = 0; i < clues.length; i++)
+		{
+		    if (i < 2)
+		    {
+		        if (!(clues[i].trim().equalsIgnoreCase("true") || clues[i].trim().equalsIgnoreCase("false")))
+		        {
+		            return "";
+		        }
+		        
+		        boolean result = Boolean.parseBoolean(clues[i]);
+		        if (i == 0)
+		        {
+		            wonVeniceBiennaleGoldenLion = result;
+		        }
+		        else if (i == 1)
+		        {
+		            artist = result;
+		        }
+			    clueList[i] = clues[i];
+		    }
+		    else
+		    {
+		        legacy = clues[i];
+		        clueList[i] = clues[i];
+		    }
+		}
+		
+		return "success";
+    }
+    
+    @Override
+    public String getClue()
+    {
+        if (super.getClue() == null)
+        {
+            return super.getClue();
+        }
+        
+        String clue = "This art celebrity was ";
+        if (!artist)
+        {
+            clue += "not ";
+        }
+        clue += "an artist and ";
+        if (!wonVeniceBiennaleGoldenLion)
+        {
+            clue += "did not win ";
+        }
+        else
+        {
+            clue += "won ";
+        }
+        clue += "the Venice Biennale Golden Lion. One of their legacies is the " + legacy + ".";
+        return clue;
+    }
+    
+    public String toString()
+    {
+        String s = "This is the art celebrity: " + getAnswer() + "\nThe clue for this celebrity is:\n";
+        
+        s += getClue();
+        
+        return s;
+    }
+}
